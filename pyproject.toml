@@ -1,0 +1,7 @@
+[project]
+name = "crawel"
+version = "0.1.0"
+description = "職能發展學院_網路爬蟲"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = []
