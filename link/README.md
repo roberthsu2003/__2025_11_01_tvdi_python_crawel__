@@ -13,3 +13,8 @@ https://youtube.com/live/iFCRPrN71NA
 https://youtube.com/live/whQ6__DdQGo
 
 ---
+
+## 2025_11_15_早上
+https://www.youtube.com/watch?v=DJ0UqMn71u0
+
+---
