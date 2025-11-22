@@ -10,6 +10,10 @@ def main():
         html_file = os.path.join(current_dir,"form_demo.html")
         #print(f"file://{html_file}")
         page.goto(f"file://{html_file}")
+        page.fill("input#name","張三")
+        page.fill("input#email","zhang@example.com")
+        page.select_option("select#country","Taiwan")
+        page.check("input#subscribe")
         sleep(3)
         browser.close()
 
