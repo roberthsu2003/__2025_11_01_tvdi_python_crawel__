@@ -1,7 +1,7 @@
 from playwright.sync_api import sync_playwright
 from time import sleep
 
-def run():
+def main():
     with sync_playwright() as p:
         print(f"p={type(p)}")
         # 啟動瀏覽器
@@ -25,4 +25,4 @@ def run():
         browser.close()
 
 if __name__ == "__main__":
-    run()
+    main()
