@@ -20,7 +20,9 @@ def main():
 
         
         page.wait_for_load_state("networkidle")  # 等待網絡空閒
-        page.click("#trigger-delayed")  # 點擊按鈕觸發異步操作
+        #page.click("#trigger-delayed")  # 點擊按鈕觸發異步操作
+        delay_button = page.locator("#trigger-delayed")  #取後Locator按鈕觸
+        delay_button.click()  #發送點擊事件
         page.wait_for_timeout(3000)  # 等待3秒以觀察效果
 
 
