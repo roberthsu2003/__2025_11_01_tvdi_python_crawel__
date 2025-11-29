@@ -15,6 +15,7 @@ def get_news(page):
 def schedule_and_fare(page):
     page.locator('#select_location01').select_option("台北")
     page.locator('#select_location02').select_option("台南")
+    
 
 
 
