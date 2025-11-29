@@ -16,6 +16,7 @@ def main():
 
         
         page.wait_for_load_state("domcontentloaded")  # 等待網絡空閒
+        page.locator("button",has_text="我同意").click()  # 點擊按鈕觸發異步操作
         page.wait_for_timeout(3000)  # 等待3秒以觀察效果
 
         browser.close()
