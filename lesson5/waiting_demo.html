@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>等待與同步示範</title>
+    <style>
+        
+        * { /* 萬用選取器(universal Selector)*/
+            /* CSS Reset */
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft JhengHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        h1 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2em;
+        }
+
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            background: #f9f9f9;
+        }
+
+        .section h2 {
+            color: #764ba2;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin: 5px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading {
+            display: none;
+            color: #667eea;
+            font-weight: bold;
+            margin: 10px 0;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            display: none;
+        }
+
+        .result.show {
+            display: block;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hidden-element {
+            display: none;
+        }
+
+        .item {
+            padding: 10px;
+            margin: 5px 0;
+            background: white;
+            border-radius: 5px;
+            border-left: 3px solid #764ba2;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        .status.success {
+            background: #4caf50;
+            color: white;
+        }
+
+        .status.loading {
+            background: #ff9800;
+            color: white;
+        }
+
+        input {
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 16px;
+            width: 100%;
+            margin: 10px 0;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        #dynamic-content {
+            min-height: 50px;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Playwright 等待與同步示範</h1>
+
+        <!-- 1. 延遲載入元素 -->
+        <div class="section">
+            <h2>1️⃣ 延遲載入元素</h2>
+            <p>模擬元素在頁面載入後才出現的情況</p>
+            <button id="trigger-delayed">觸發延遲載入</button>
+            <div class="loading" id="loading-1">載入中...</div>
+            <div class="result" id="delayed-result">
+                <p>✅ 延遲元素已載入！</p>
+                <p id="delayed-content">這個內容在 2 秒後才出現</p>
+            </div>
+        </div>
+
+        <!-- 2. 動態內容載入 -->
+        <div class="section">
+            <h2>2️⃣ 動態內容載入（模擬 AJAX）</h2>
+            <p>模擬從 API 獲取資料的過程</p>
+            <button id="load-data">載入資料</button>
+            <div class="loading" id="loading-2">正在從伺服器獲取資料...</div>
+            <div class="result" id="data-result">
+                <div id="dynamic-content"></div>
+            </div>
+        </div>
+
+        <!-- 3. 元素狀態變化 -->
+        <div class="section">
+            <h2>3️⃣ 元素狀態變化</h2>
+            <p>等待元素從隱藏變為可見</p>
+            <button id="toggle-visibility">切換顯示/隱藏</button>
+            <div class="result show" id="toggle-result">
+                <p id="toggle-element" class="hidden-element">🎉 我現在可見了！</p>
+            </div>
+        </div>
+
+        <!-- 4. 表單提交與導航 -->
+        <div class="section">
+            <h2>4️⃣ 表單提交（模擬導航）</h2>
+            <p>提交表單後等待頁面更新</p>
+            <input type="text" id="username" placeholder="輸入使用者名稱" value="測試用戶">
+            <button id="submit-form">提交表單</button>
+            <div class="loading" id="loading-3">處理中...</div>
+            <div class="result" id="form-result">
+                <p>✅ 表單提交成功！</p>
+                <p id="submit-message"></p>
+            </div>
+        </div>
+
+        <!-- 5. 多個元素動態生成 -->
+        <div class="section">
+            <h2>5️⃣ 批次載入元素</h2>
+            <p>等待多個元素逐步載入完成</p>
+            <button id="load-items">載入項目列表</button>
+            <div class="loading" id="loading-4">載入項目中...</div>
+            <div class="result" id="items-result">
+                <div id="items-container"></div>
+            </div>
+        </div>
+
+        <!-- 6. 網路請求模擬 -->
+        <div class="section">
+            <h2>6️⃣ API 請求模擬</h2>
+            <p>模擬 API 請求與回應</p>
+            <button id="api-request">發送 API 請求</button>
+            <div class="loading" id="loading-5">等待 API 回應...</div>
+            <div class="result" id="api-result">
+                <p><strong>API 回應：</strong></p>
+                <pre id="api-response"></pre>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 1. 延遲載入元素
+        document.getElementById('trigger-delayed').addEventListener('click', function() {
+            const loading = document.getElementById('loading-1');
+            const result = document.getElementById('delayed-result');
+            
+            loading.style.display = 'block';
+            result.classList.remove('show');
+            
+            setTimeout(() => {
+                loading.style.display = 'none';
+                result.classList.add('show');
+            }, 2000);
+        });
+
+        // 2. 動態內容載入
+        document.getElementById('load-data').addEventListener('click', function() {
+            const loading = document.getElementById('loading-2');
+            const result = document.getElementById('data-result');
+            const content = document.getElementById('dynamic-content');
+            
+            loading.style.display = 'block';
+            result.classList.remove('show');
+            content.innerHTML = '';
+            
+            setTimeout(() => {
+                loading.style.display = 'none';
+                result.classList.add('show');
+                
+                const data = [
+                    { id: 1, name: '資料項目 1', status: '成功' },
+                    { id: 2, name: '資料項目 2', status: '成功' },
+                    { id: 3, name: '資料項目 3', status: '成功' }
+                ];
+                
+                data.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = 'item fade-in';
+                    div.innerHTML = `<strong>${item.name}</strong> <span class="status success">${item.status}</span>`;
+                    content.appendChild(div);
+                });
+            }, 1500);
+        });
+
+        // 3. 元素狀態變化
+        document.getElementById('toggle-visibility').addEventListener('click', function() {
+            const element = document.getElementById('toggle-element');
+            element.classList.toggle('hidden-element');
+        });
+
+        // 4. 表單提交
+        document.getElementById('submit-form').addEventListener('click', function() {
+            const loading = document.getElementById('loading-3');
+            const result = document.getElementById('form-result');
+            const message = document.getElementById('submit-message');
+            const username = document.getElementById('username').value;
+            
+            loading.style.display = 'block';
+            result.classList.remove('show');
+            
+            setTimeout(() => {
+                loading.style.display = 'none';
+                result.classList.add('show');
+                message.textContent = `歡迎，${username}！您的資料已成功提交。`;
+            }, 1000);
+        });
+
+        // 5. 批次載入元素
+        document.getElementById('load-items').addEventListener('click', function() {
+            const loading = document.getElementById('loading-4');
+            const result = document.getElementById('items-result');
+            const container = document.getElementById('items-container');
+            
+            loading.style.display = 'block';
+            result.classList.remove('show');
+            container.innerHTML = '';
+            
+            let count = 0;
+            const interval = setInterval(() => {
+                count++;
+                const item = document.createElement('div');
+                item.className = 'item fade-in';
+                item.textContent = `項目 ${count}`;
+                container.appendChild(item);
+                
+                if (count >= 5) {
+                    clearInterval(interval);
+                    loading.style.display = 'none';
+                    result.classList.add('show');
+                }
+            }, 500);
+        });
+
+        // 6. API 請求模擬
+        document.getElementById('api-request').addEventListener('click', function() {
+            const loading = document.getElementById('loading-5');
+            const result = document.getElementById('api-result');
+            const response = document.getElementById('api-response');
+            
+            loading.style.display = 'block';
+            result.classList.remove('show');
+            
+            setTimeout(() => {
+                loading.style.display = 'none';
+                result.classList.add('show');
+                
+                const apiData = {
+                    status: 200,
+                    message: 'Success',
+                    data: {
+                        userId: 12345,
+                        username: 'playwright_user',
+                        timestamp: new Date().toISOString()
+                    }
+                };
+                
+                response.textContent = JSON.stringify(apiData, null, 2);
+            }, 2000);
+        });
+
+        // 頁面載入完成標記
+        window.addEventListener('load', function() {
+            console.log('頁面完全載入');
+            document.body.setAttribute('data-loaded', 'true');
+        });
+    </script>
+</body>
+</html>
