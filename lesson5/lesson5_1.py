@@ -18,6 +18,8 @@ def main():
 
         page.goto(path)
 
+        
+        page.wait_for_load_state("networkidle")  # 等待網絡空閒
         page.wait_for_timeout(3000)  # 等待3秒以觀察效果
 
         browser.close()
