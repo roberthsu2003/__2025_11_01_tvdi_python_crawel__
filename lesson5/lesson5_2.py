@@ -1,6 +1,17 @@
 import os
 from playwright.sync_api import sync_playwright
 
+def get_news(page):
+    lis = page.locator("ul#alltype-news.news-list > li").all()
+    print(type(lis))
+    print(f"共找到 {len(lis)} 筆最新消息")
+    for item in lis:
+        date = item.locator("div.news-date").text_content()
+        title = item.locator("div.news-title").text_content()
+        print(date)
+        print(title)
+        print("=" * 60)
+
 
 
 def main():
@@ -17,16 +28,7 @@ def main():
         
         page.wait_for_load_state("domcontentloaded")  # 等待網絡空閒
         page.locator("button",has_text="我同意").click()  # 點擊按鈕觸發異步操作
-
-        lis = page.locator("ul#alltype-news.news-list > li").all()
-        print(type(lis))
-        print(f"共找到 {len(lis)} 筆最新消息")
-        for item in lis:
-            date = item.locator("div.news-date").text_content()
-            title = item.locator("div.news-title").text_content()
-            print(date)
-            print(title)
-            print("=" * 60)
+        get_news(page)       
 
         page.wait_for_timeout(3000)  # 等待3秒以觀察效果
 
