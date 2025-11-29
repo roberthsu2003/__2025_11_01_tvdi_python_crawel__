@@ -33,7 +33,9 @@ https://youtube.com/live/rvDr2248zas
 ---
 
 ## 2025_11_29_早上
-
 https://www.youtube.com/watch?v=xb2grOXh7Ho
+
+## 2025_11_29_下午
+https://www.youtube.com/watch?v=Sfz_rldoXIg
 
 ---
