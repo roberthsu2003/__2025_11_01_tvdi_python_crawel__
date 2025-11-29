@@ -1,4 +1,5 @@
 import os
+from datetime import datetime, timedelta
 from playwright.sync_api import sync_playwright
 
 def get_news(page):
@@ -15,7 +16,29 @@ def get_news(page):
 def schedule_and_fare(page):
     page.locator('#select_location01').select_option("台北")
     page.locator('#select_location02').select_option("台南")
-    
+
+    # 計算當前時間加1小時
+    now = datetime.now()
+    departure_time = now + timedelta(hours=1)
+
+    # 格式化日期和時間
+    departure_date = departure_time.strftime("%Y/%m/%d")
+    departure_hour = departure_time.strftime("%H:%M")
+
+    # 填入出發日期
+    date_input = page.locator("#Departdate01")
+    date_input.click()
+    date_input.fill("")
+    date_input.fill(departure_date)
+
+    # 填入出發時間
+    time_input = page.locator("#outWardTime")
+    time_input.click()
+    time_input.fill("")
+    time_input.fill(departure_hour)
+    page.locator("button",has_text="查詢").click()
+
+
 
 
 
@@ -36,7 +59,7 @@ def main():
         get_news(page)       
         schedule_and_fare(page)
 
-        page.wait_for_timeout(3000)  # 等待3秒以觀察效果
+        page.wait_for_timeout(10000)  # 等待3秒以觀察效果
 
         browser.close()
 
