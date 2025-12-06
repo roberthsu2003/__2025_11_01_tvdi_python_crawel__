@@ -13,17 +13,10 @@
             "console": "integratedTerminal"
         },
         {
-            "name": "lesson5_1",
+            "name": "lesson6_2",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/lesson5/lesson5_1.py",
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "lesson5_2",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "${workspaceFolder}/lesson5/lesson5_2.py",
+            "program": "${workspaceFolder}/lesson6/lesson6_2.py",
             "console": "integratedTerminal"
         }
         
