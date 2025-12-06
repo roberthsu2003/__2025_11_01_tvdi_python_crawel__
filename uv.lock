@@ -130,12 +130,14 @@ version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
     { name = "ipykernel" },
+    { name = "nest-asyncio" },
     { name = "playwright" },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "ipykernel", specifier = ">=7.1.0" },
+    { name = "nest-asyncio", specifier = ">=1.6.0" },
     { name = "playwright", specifier = ">=1.56.0" },
 ]
 
