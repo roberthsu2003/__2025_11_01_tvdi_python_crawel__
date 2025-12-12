@@ -1,0 +1,9 @@
+# Python 相依套件清單
+# 台灣銀行匯率即時查詢系統
+
+# 爬蟲框架
+crawl4ai>=0.7.0
+
+# 建議同時安裝以下套件以確保 crawl4ai 正常運作
+# asyncio 是 Python 3.10+ 內建的，無需額外安裝
+# tkinter 通常隨 Python 一起安裝，但某些 Linux 發行版可能需要單獨安裝
