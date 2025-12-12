@@ -6,3 +6,5 @@ applyTo: 'learning2/**'
 Always use context7 when I need code generation, setup or configuration steps, or
 library/API documentation. This means you should automatically use the Context7 MCP
 tools to resolve library id and get library docs without me having to explicitly ask.
+
+我使用的python開發環境是uv,使用uv來管理和運行我的python項目。請確保您了解uv的基本用法和命令，以便在需要時提供準確的指導。
