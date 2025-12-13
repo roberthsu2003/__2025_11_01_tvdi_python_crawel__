@@ -12,7 +12,7 @@ async def main():
         headless=False  # 設定為非無頭模式，瀏覽器界面將可見
         )
     
-    # 配置CrawlerRunConfig選項
+# 配置CrawlerRunConfig選項
     run_config = CrawlerRunConfig(
         cache_mode=CacheMode.BYPASS  # 設定為繞過快取模式
         )
