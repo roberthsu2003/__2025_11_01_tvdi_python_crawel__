@@ -12,7 +12,7 @@ async def main():
                    搭配 Intel i9 處理器，適合專業遊戲玩家。</p>
                 <div class='price-section'>
                     <span class='old-price'>原價 $1499.99</span>
-                    <span class='new-price'>特價 $1299.99</span>
+                <span class='new-price'>特價 $1299.99</span>
                 </div>
                 <a href='https://example.com/gaming-laptop'>查看詳情</a>
             </div>
