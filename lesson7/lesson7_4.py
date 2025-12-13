@@ -2,6 +2,7 @@ import asyncio
 import json
 from crawl4ai import AsyncWebCrawler, CrawlerRunConfig, CacheMode
 from crawl4ai.extraction_strategy import JsonCssExtractionStrategy
+from pprint import pprint
 
 
 async def main():
@@ -137,6 +138,7 @@ async def main():
             config=run_config
         )
         data = json.loads(result.extracted_content)
+        
 
         if isinstance(data, list):
             for product in data:
