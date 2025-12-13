@@ -14,6 +14,16 @@ async def main():
                 "name":"幣別",
                 "selector":"td[data-table='幣別'] div.print_show",
                 "type":"text"
+            },
+            {
+                "name":"本行即期買入",
+                "selector":"td[data-table='本行即期買入']",
+                "type":"text"
+            },
+            {
+                "name":"本行即期賣出",
+                "selector":"td[data-table='本行即期賣出']",
+                "type":"text"
             }
             
         ]
