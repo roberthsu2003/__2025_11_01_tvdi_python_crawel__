@@ -1,0 +1,15 @@
+{
+    "mcpServers": {
+        "n8n-mcp": {
+            "command": "npx",
+            "args": [
+                "-y",
+                "supergateway",
+                "--streamableHttp",
+                "https://superinnocent-hillary-unwholesome.ngrok-free.dev/mcp-server/http",
+                "--header",
+                "authorization:Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxY2ZmZGRiMy1hZWM3LTQyOGUtYTYxMC1hNGYzZmQ3MTRiM2MiLCJpc3MiOiJuOG4iLCJhdWQiOiJtY3Atc2VydmVyLWFwaSIsImp0aSI6IjVhYTMwNGFmLTM4MjYtNGRjNS04Y2E2LWJjOTc3Y2NkZjJmNyIsImlhdCI6MTc2NTMzOTEyOX0.cQzMkNzhhBplfwi_72RsLAiS6FIFInnTpSZjSgyV-dg"
+            ]
+        }
+    }
+}
