@@ -20,20 +20,26 @@ async def main():
     """
 
     schema ={
-        "name":"項目名稱",
-        "baseSelector":"div.crypto-row",
+        "name":"加密貨幣列表",
+        "baseSelector":"body",
         "fields":[
             {
-                "name":"加密貨幣名",
-                "selector":"h2.coin-name",
-                "type":"text"
-            },
-            {
-                "name":"價格",
-                "selector":"span.coin-price",
-                "type":"text"
-            },
-        
+                "name":"加密貨幣",
+                "selector":"div.crypto-row",
+                "type":"list",
+                "fields":[
+                    {
+                        "name":"加密貨幣名",
+                        "selector":"h2.coin-name",
+                        "type":"text"
+                    },
+                    {
+                        "name":"價格",
+                        "selector":"span.coin-price",
+                        "type":"text"
+                    }
+                ] 
+            }
         ]
     }
 
@@ -48,10 +54,13 @@ async def main():
             url=f"raw://{html}",
             config=run_config)
         data = json.loads(result.extracted_content)
-        for item in data:
-            print(f"幣名: {item['加密貨幣名']}")
-            print(f"價格: {item['價格']}")
-            print("=============")
+        print(data)
+        
+        # for item in data:
+        #     print(f"幣名: {item['加密貨幣名']}")
+        #     print(f"價格: {item['價格']}")
+        #     print("=============")
+        
 
 if __name__ == "__main__":
     asyncio.run(main())

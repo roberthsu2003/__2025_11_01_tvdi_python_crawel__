@@ -28,21 +28,31 @@ async def main():
     </html> 
     """
 
-    schema ={
-        "name":"項目名稱",
-        "baseSelector":"div.crypto-row",
-        "fields":[
+    schema = {
+        "name": "products",
+        "baseSelector": ".product-card",
+        "fields": [
             {
-                "name":"加密貨幣名",
-                "selector":"h2.coin-name",
-                "type":"text"
+                "name": "title",
+                "selector": "h2",
+                "type": "text"
             },
             {
-                "name":"價格",
-                "selector":"span.coin-price",
-                "type":"text"
+                "name": "description",
+                "selector": "p",
+                "type": "text"
             },
-        
+            {
+                "name": "price",
+                "selector": ".new-price",
+                "type": "text"
+            },
+            {
+                "name": "link",
+                "selector": "a",
+                "type": "attribute",
+                "attribute": "href"
+            }
         ]
     }
 
@@ -58,8 +68,9 @@ async def main():
             config=run_config)
         data = json.loads(result.extracted_content)
         for item in data:
-            print(f"幣名: {item['加密貨幣名']}")
-            print(f"價格: {item['價格']}")
+            print(f"產品名稱: {item['title']}")
+            print(f"價格: {item['price']}")
+            print(f"連結: {item['link']}")
             print("=============")
 
 if __name__ == "__main__":
