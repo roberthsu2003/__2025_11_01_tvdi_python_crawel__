@@ -29,11 +29,11 @@ async def main():
         ]
     }
 
-    strategy = JsonCssExtractionStrategy(schema)
+    extraction_strategy = JsonCssExtractionStrategy(schema)
 
     run_config = CrawlerRunConfig(
         cache_mode=CacheMode.BYPASS,
-        extraction_strategy=strategy
+        extraction_strategy=extraction_strategy
         )
     async with AsyncWebCrawler() as crawler:
         url='https://rate.bot.com.tw/xrt?Lang=zh-TW'
