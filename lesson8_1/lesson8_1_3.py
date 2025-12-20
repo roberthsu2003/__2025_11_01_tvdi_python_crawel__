@@ -78,7 +78,7 @@ def get_stock_schema() -> Dict:
 async def fetch_stock_info(
     crawler: AsyncWebCrawler, 
     stock_code: str, 
-    config: CrawlerRunConfig,
+    base_config: CrawlerRunConfig,
     semaphore: asyncio.Semaphore
 ) -> Optional[Dict]:
     """
@@ -87,7 +87,7 @@ async def fetch_stock_info(
     Args:
         crawler: AsyncWebCrawler 實例
         stock_code: 股票代碼
-        config: 爬蟲執行設定
+        base_config: 基礎爬蟲執行設定
         semaphore: 用於限制並行數量的信號量
     
     Returns:
@@ -97,6 +97,19 @@ async def fetch_stock_info(
         url = f'https://www.wantgoo.com/stock/{stock_code}/technical-chart'
         
         try:
+            # 針對每個股票創建帶有等待條件的配置
+            # 等待關鍵元素載入完成，確保動態內容已經渲染
+            config = CrawlerRunConfig(
+                cache_mode=base_config.cache_mode,
+                extraction_strategy=base_config.extraction_strategy,
+                scan_full_page=base_config.scan_full_page,
+                verbose=base_config.verbose,
+                # 等待多個關鍵元素載入完成
+                wait_for="js:() => document.querySelector('div.quotes-info div.deal') && document.querySelector('span.astock-code[c-model=\"id\"]') && document.querySelector('#quotesUl span[c-model=\"volume\"]')",
+                wait_for_timeout=15000,  # 15 秒超時
+                page_timeout=30000  # 整體頁面載入 30 秒超時
+            )
+            
             result = await crawler.arun(url=url, config=config)
             
             if result.success:
@@ -124,7 +137,8 @@ async def main():
     
     browser_config = BrowserConfig(headless=True)
     
-    crawler_run_config = CrawlerRunConfig(
+    # 建立基礎配置（wait_for 會在 fetch_stock_info 中針對每個請求設定）
+    base_crawler_run_config = CrawlerRunConfig(
         cache_mode=CacheMode.BYPASS,
         extraction_strategy=extraction_strategy,
         scan_full_page=True,
@@ -132,12 +146,15 @@ async def main():
     )
     
     # 限制同時爬取的數量（避免對目標網站造成過大負擔）
-    semaphore = asyncio.Semaphore(5)
+    # 降低並行數量，給每個請求更多時間等待動態內容載入
+    semaphore = asyncio.Semaphore(3)
+    
+    print("開始爬取股票資訊，等待動態內容載入完成...\n")
     
     # 使用單一 crawler 實例並行爬取所有股票
     async with AsyncWebCrawler(config=browser_config) as crawler:
         tasks = [
-            fetch_stock_info(crawler, code, crawler_run_config, semaphore)
+            fetch_stock_info(crawler, code, base_crawler_run_config, semaphore)
             for code in stock_codes
         ]
         
