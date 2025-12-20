@@ -307,56 +307,149 @@ class StockMonitorApp:
     def setup_left_panel(self, parent):
         """建立左側股票選擇面板"""
         # TODO: Phase 4 - 實作左側面板
-        left_frame = ttk.Frame(parent, width=300)
+        left_frame = ttk.Frame(parent, width=280)
         parent.add(left_frame, weight=1)
         
         # 標題
-        ttk.Label(
+        title_label = ttk.Label(
             left_frame,
-            text="台灣股票清單",
-            font=('Arial', 12, 'bold')
-        ).pack(pady=5)
+            text="📈 台灣股票清單",
+            font=('Arial', 18, 'bold')
+        )
+        title_label.pack(pady=10)
         
-        # 搜尋框
-        search_frame = ttk.Frame(left_frame)
-        search_frame.pack(fill=tk.X, padx=5, pady=5)
+        # 搜尋框（增強版）
+        search_frame = ttk.LabelFrame(
+            left_frame,
+            text="  搜尋股票  ",
+            padding=12,
+            style='Large.TLabelframe'
+        )
         
-        ttk.Label(search_frame, text="🔍").pack(side=tk.LEFT)
+        # 設定 LabelFrame 標題字體
+        style = ttk.Style()
+        style.configure('Large.TLabelframe', font=('Arial', 14, 'bold'))
+        style.configure('Large.TLabelframe.Label', font=('Arial', 14, 'bold'))
+        
+        search_frame.pack(fill=tk.X, padx=10, pady=5)
+        
+        search_input_frame = ttk.Frame(search_frame)
+        search_input_frame.pack(fill=tk.X)
+        
+        ttk.Label(
+            search_input_frame,
+            text="🔍",
+            font=('Arial', 18)
+        ).pack(side=tk.LEFT, padx=(0, 8))
+        
         self.search_var = tk.StringVar()
         self.search_var.trace('w', self.on_search)
-        search_entry = ttk.Entry(search_frame, textvariable=self.search_var)
-        search_entry.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=5)
+        search_entry = ttk.Entry(
+            search_input_frame,
+            textvariable=self.search_var,
+            font=('Arial', 14)
+        )
+        search_entry.pack(side=tk.LEFT, fill=tk.X, expand=True)
         
-        # 股票列表（使用 Listbox + Scrollbar）
+        # 清除搜尋按鈕
+        clear_btn = ttk.Button(
+            search_input_frame,
+            text="✕",
+            width=3,
+            command=lambda: self.search_var.set('')
+        )
+        clear_btn.pack(side=tk.LEFT, padx=(5, 0))
+        
+        # 搜尋提示
+        self.search_hint = ttk.Label(
+            search_frame,
+            text="輸入股票代碼或名稱",
+            font=('Arial', 11),
+            foreground='gray'
+        )
+        self.search_hint.pack(anchor=tk.W, pady=(5, 0))
+        
+        # 股票列表（使用 Treeview 替代 Listbox）
         list_frame = ttk.Frame(left_frame)
-        list_frame.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
+        list_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
         
+        # 創建 Treeview
         scrollbar = ttk.Scrollbar(list_frame)
         scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
         
-        self.stock_listbox = tk.Listbox(
+        # 設定 Treeview 樣式
+        style.configure("Stock.Treeview", font=('Arial', 13), rowheight=35)
+        style.configure("Stock.Treeview.Heading", font=('Arial', 14, 'bold'))
+        
+        self.stock_tree = ttk.Treeview(
             list_frame,
+            columns=('code', 'name'),
+            show='tree headings',
             yscrollcommand=scrollbar.set,
-            font=('Arial', 10)
+            style="Stock.Treeview",
+            selectmode='browse'
         )
-        self.stock_listbox.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-        scrollbar.config(command=self.stock_listbox.yview)
+        
+        # 設定欄位
+        self.stock_tree.heading('#0', text='')
+        self.stock_tree.heading('code', text='代碼')
+        self.stock_tree.heading('name', text='股票名稱')
+        
+        self.stock_tree.column('#0', width=30, stretch=False)
+        self.stock_tree.column('code', width=80, anchor=tk.CENTER)
+        self.stock_tree.column('name', width=150, anchor=tk.W)
+        
+        self.stock_tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        scrollbar.config(command=self.stock_tree.yview)
         
         # 雙擊加入觀察
-        self.stock_listbox.bind('<Double-Button-1>', self.on_stock_double_click)
+        self.stock_tree.bind('<Double-Button-1>', self.on_stock_double_click)
         
-        # 加入按鈕
-        ttk.Button(
-            left_frame,
+        # 按鈕區域
+        btn_frame = ttk.Frame(left_frame)
+        btn_frame.pack(fill=tk.X, padx=10, pady=10)
+        
+        # 加入按鈕（美化版）
+        add_btn = tk.Button(
+            btn_frame,
             text="➕ 加入觀察清單",
-            command=self.add_to_watchlist
-        ).pack(pady=5)
+            command=self.add_to_watchlist,
+            font=('Arial', 15, 'bold'),
+            bg='#4CAF50',
+            fg='#FFFF00',  # 黃色文字
+            activebackground='#45a049',
+            activeforeground='#FFFF00',
+            relief=tk.FLAT,
+            cursor='hand2',
+            padx=25,
+            pady=12
+        )
+        add_btn.pack(fill=tk.X)
+        
+        # 滑鼠懸停效果
+        def on_enter(e):
+            add_btn.config(bg='#45a049')
+        
+        def on_leave(e):
+            add_btn.config(bg='#4CAF50')
+        
+        add_btn.bind("<Enter>", on_enter)
+        add_btn.bind("<Leave>", on_leave)
+        
+        # 統計資訊
+        self.stock_count_label = ttk.Label(
+            left_frame,
+            text="",
+            font=('Arial', 12),
+            foreground='gray'
+        )
+        self.stock_count_label.pack(pady=(5, 10))
     
     def setup_right_panel(self, parent):
         """建立右側資料顯示面板"""
         # TODO: Phase 5 - 實作右側面板
         right_frame = ttk.Frame(parent)
-        parent.add(right_frame, weight=3)
+        parent.add(right_frame, weight=4)
         
         # 標題
         ttk.Label(
@@ -400,31 +493,52 @@ class StockMonitorApp:
             # twstock.codes 包含所有股票代碼資訊
             for code, info in twstock.codes.items():
                 if info.type == '股票':  # 只顯示股票類型
-                    display_text = f"{code} - {info.name}"
-                    self.all_stocks.append((code, info.name, display_text))
+                    self.all_stocks.append((code, info.name))
             
             # 依代碼排序
             self.all_stocks.sort(key=lambda x: x[0])
             
-            # 顯示在列表中
-            for _, _, display_text in self.all_stocks:
-                self.stock_listbox.insert(tk.END, display_text)
+            # 顯示在 Treeview 中
+            for code, name in self.all_stocks:
+                self.stock_tree.insert('', tk.END, values=(code, name))
+            
+            # 更新統計資訊
+            self.update_stock_count(len(self.all_stocks))
             
             print(f"✓ 載入 {len(self.all_stocks)} 支台灣股票")
             
         except Exception as e:
             messagebox.showerror("錯誤", f"載入股票清單失敗: {e}")
     
+    def update_stock_count(self, count: int, total: int = None):
+        """更新股票數量統計"""
+        if total is not None:
+            text = f"顯示 {count} / {total} 支股票"
+        else:
+            text = f"共 {count} 支股票"
+        self.stock_count_label.config(text=text)
+    
     def on_search(self, *args):
         """搜尋框文字變更時觸發"""
         # TODO: Phase 4.3 - 實作搜尋功能
         search_text = self.search_var.get().lower()
         
-        self.stock_listbox.delete(0, tk.END)
+        # 清空 Treeview
+        for item in self.stock_tree.get_children():
+            self.stock_tree.delete(item)
         
-        for code, name, display_text in self.all_stocks:
+        # 過濾並顯示符合的股票
+        matched_count = 0
+        for code, name in self.all_stocks:
             if search_text in code.lower() or search_text in name.lower():
-                self.stock_listbox.insert(tk.END, display_text)
+                self.stock_tree.insert('', tk.END, values=(code, name))
+                matched_count += 1
+        
+        # 更新統計資訊
+        if search_text:
+            self.update_stock_count(matched_count, total=len(self.all_stocks))
+        else:
+            self.update_stock_count(len(self.all_stocks))
     
     def on_stock_double_click(self, event):
         """雙擊股票項目時加入觀察清單"""
@@ -433,13 +547,15 @@ class StockMonitorApp:
     def add_to_watchlist(self):
         """加入股票到觀察清單"""
         # TODO: Phase 4.4 - 實作加入功能
-        selection = self.stock_listbox.curselection()
+        selection = self.stock_tree.selection()
         if not selection:
             messagebox.showwarning("提示", "請先選擇一支股票")
             return
         
-        selected_text = self.stock_listbox.get(selection[0])
-        stock_code = selected_text.split(' - ')[0]
+        # 取得選中的股票代碼
+        item = selection[0]
+        values = self.stock_tree.item(item, 'values')
+        stock_code = values[0]
         
         if stock_code in self.watchlist:
             messagebox.showinfo("提示", f"股票 {stock_code} 已在觀察清單中")
@@ -471,49 +587,200 @@ class StockMonitorApp:
             self.empty_label = ttk.Label(
                 self.stocks_container,
                 text="📊 尚未加入任何股票\n\n請從左側清單選擇股票加入觀察",
-                font=('Arial', 12),
+                font=('Arial', 14),
                 foreground='gray'
             )
             self.empty_label.pack(pady=50)
         else:
-            # 顯示每支股票的資訊卡片
-            for stock_code in sorted(self.watchlist):
-                self.create_stock_card(stock_code)
+            # 使用三欄布局顯示股票卡片
+            sorted_stocks = sorted(self.watchlist)
+            current_row_frame = None
+            
+            for idx, stock_code in enumerate(sorted_stocks):
+                col = idx % 3  # 0, 1, 或 2（左、中、右欄）
+                
+                # 為每一列創建 Frame
+                if col == 0:
+                    current_row_frame = ttk.Frame(self.stocks_container)
+                    current_row_frame.pack(fill=tk.X, padx=5, pady=5)
+                
+                self.create_stock_card(stock_code, current_row_frame, col)
     
-    def create_stock_card(self, stock_code: str):
-        """建立股票資訊卡片"""
-        # TODO: Phase 5.1, 5.2 - 實作卡片 UI
+    def create_stock_card(self, stock_code: str, parent_frame: ttk.Frame, column: int):
+        """
+        建立股票資訊卡片
+        
+        Args:
+            stock_code: 股票代碼
+            parent_frame: 父容器
+            column: 欄位編號（0 或 1）
+        """
+        # 主卡片容器
         card_frame = ttk.LabelFrame(
-            self.stocks_container,
-            text=f"股票 {stock_code}",
-            padding=10
+            parent_frame,
+            text=f"  股票 {stock_code}  ",
+            padding=15
         )
-        card_frame.pack(fill=tk.X, padx=10, pady=5)
+        card_frame.grid(row=0, column=column, sticky="nsew", padx=5, pady=5)
+        parent_frame.columnconfigure(column, weight=1)
         
         # 取得快取資料
         stock_data = self.stock_data_cache.get(stock_code)
         
         if stock_data:
-            # 顯示詳細資訊
-            info_text = f"""
-股票代碼: {stock_data.get('股票號碼', 'N/A')}
-股票名稱: {stock_data.get('股票名稱', 'N/A')}
-即時價格: {stock_data.get('即時價格', 'N/A')}
-漲跌: {stock_data.get('漲跌', 'N/A')} ({stock_data.get('漲跌百分比', 'N/A')})
-開盤: {stock_data.get('開盤價', 'N/A')} | 最高: {stock_data.get('最高價', 'N/A')} | 最低: {stock_data.get('最低價', 'N/A')}
-成交量: {stock_data.get('成交量(張)', 'N/A')} | 昨收: {stock_data.get('前一日收盤價', 'N/A')}
-更新時間: {stock_data.get('update_time', 'N/A')}
-            """
-            ttk.Label(card_frame, text=info_text, justify=tk.LEFT).pack(side=tk.LEFT)
+            # 內容容器
+            content_frame = ttk.Frame(card_frame)
+            content_frame.pack(fill=tk.BOTH, expand=True)
+            
+            # === 標題區（股票代碼與名稱） ===
+            header_frame = ttk.Frame(content_frame)
+            header_frame.pack(fill=tk.X, pady=(0, 10))
+            
+            ttk.Label(
+                header_frame,
+                text=f"{stock_data.get('股票號碼', 'N/A')}",
+                font=('Arial', 20, 'bold')
+            ).pack(side=tk.LEFT)
+            
+            ttk.Label(
+                header_frame,
+                text=f"{stock_data.get('股票名稱', 'N/A')}",
+                font=('Arial', 18)
+            ).pack(side=tk.LEFT, padx=(10, 0))
+            
+            # === 即時價格區（大字體顯示） ===
+            price_frame = ttk.Frame(content_frame)
+            price_frame.pack(fill=tk.X, pady=(0, 10))
+            
+            price_text = stock_data.get('即時價格', 'N/A')
+            price_label = tk.Label(
+                price_frame,
+                text=price_text,
+                font=('Arial', 36, 'bold'),
+                fg='black'
+            )
+            price_label.pack(side=tk.LEFT)
+            
+            # 漲跌顯示（帶顏色）
+            change = stock_data.get('漲跌', 'N/A')
+            change_rate = stock_data.get('漲跌百分比', 'N/A')
+            
+            # 判斷漲跌顏色
+            color = 'black'
+            if change != 'N/A' and change:
+                try:
+                    change_value = float(change.replace(',', ''))
+                    if change_value > 0:
+                        color = '#d32f2f'  # 紅色（漲）
+                        change = f"▲ {change}"
+                    elif change_value < 0:
+                        color = '#388e3c'  # 綠色（跌）
+                        change = f"▼ {change}"
+                except:
+                    pass
+            
+            change_frame = ttk.Frame(price_frame)
+            change_frame.pack(side=tk.LEFT, padx=(15, 0))
+            
+            tk.Label(
+                change_frame,
+                text=change,
+                font=('Arial', 20, 'bold'),
+                fg=color
+            ).pack()
+            
+            tk.Label(
+                change_frame,
+                text=change_rate,
+                font=('Arial', 17),
+                fg=color
+            ).pack()
+            
+            # === 詳細資訊區（兩欄佈局） ===
+            info_frame = ttk.Frame(content_frame)
+            info_frame.pack(fill=tk.X, pady=(5, 10))
+            
+            # 左欄
+            left_col = ttk.Frame(info_frame)
+            left_col.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+            
+            self._add_info_row(left_col, "開盤", stock_data.get('開盤價', 'N/A'))
+            self._add_info_row(left_col, "最高", stock_data.get('最高價', 'N/A'))
+            self._add_info_row(left_col, "最低", stock_data.get('最低價', 'N/A'))
+            
+            # 右欄
+            right_col = ttk.Frame(info_frame)
+            right_col.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(20, 0))
+            
+            self._add_info_row(right_col, "成交量", stock_data.get('成交量(張)', 'N/A'))
+            self._add_info_row(right_col, "昨收", stock_data.get('前一日收盤價', 'N/A'))
+            self._add_info_row(right_col, "更新", stock_data.get('update_time', 'N/A'), size=11)
+            
         else:
-            ttk.Label(card_frame, text="等待更新資料...").pack(side=tk.LEFT)
+            # 等待資料
+            ttk.Label(
+                card_frame,
+                text="⏳ 等待更新資料...",
+                font=('Arial', 16),
+                foreground='gray'
+            ).pack(pady=20)
         
-        # 移除按鈕
-        ttk.Button(
-            card_frame,
-            text="❌ 移除",
-            command=lambda: self.remove_from_watchlist(stock_code)
-        ).pack(side=tk.RIGHT)
+        # === 移除按鈕區 ===
+        btn_frame = ttk.Frame(card_frame)
+        btn_frame.pack(fill=tk.X, pady=(10, 0))
+        
+        # 使用 tk.Button 以便自訂顏色
+        remove_btn = tk.Button(
+            btn_frame,
+            text="✕ 移除",
+            command=lambda: self.remove_from_watchlist(stock_code),
+            font=('Arial', 13, 'bold'),
+            bg='#f44336',
+            fg='#FFFF00',  # 黃色文字
+            activebackground='#d32f2f',
+            activeforeground='#FFFF00',
+            relief=tk.FLAT,
+            cursor='hand2',
+            padx=20,
+            pady=8
+        )
+        remove_btn.pack(side=tk.RIGHT)
+        
+        # 滑鼠懸停效果
+        def on_enter(e):
+            remove_btn.config(bg='#d32f2f')
+        
+        def on_leave(e):
+            remove_btn.config(bg='#f44336')
+        
+        remove_btn.bind("<Enter>", on_enter)
+        remove_btn.bind("<Leave>", on_leave)
+    
+    def _add_info_row(self, parent, label: str, value: str, size: int = 14):
+        """
+        添加資訊列
+        
+        Args:
+            parent: 父容器
+            label: 標籤文字
+            value: 數值
+            size: 字體大小
+        """
+        row = ttk.Frame(parent)
+        row.pack(fill=tk.X, pady=3)
+        
+        ttk.Label(
+            row,
+            text=f"{label}:",
+            font=('Arial', size),
+            foreground='#666'
+        ).pack(side=tk.LEFT)
+        
+        ttk.Label(
+            row,
+            text=value,
+            font=('Arial', size, 'bold')
+        ).pack(side=tk.LEFT, padx=(5, 0))
     
     def manual_update(self):
         """手動更新股票資料"""
