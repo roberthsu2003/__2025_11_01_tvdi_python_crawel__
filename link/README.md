@@ -59,4 +59,7 @@ https://youtube.com/live/muYQKHTXe0I
 ## 2025_12_20_早上
 https://www.youtube.com/watch?v=tm89dj4pvc4
 
+## 2025_12_20_下午
+https://www.youtube.com/watch?v=pfe4TCQ522A
+
 ---
