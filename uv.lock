@@ -598,6 +598,7 @@ dependencies = [
     { name = "pandas" },
     { name = "playwright" },
     { name = "streamlit" },
+    { name = "twstock" },
 ]
 
 [package.metadata]
@@ -608,6 +609,7 @@ requires-dist = [
     { name = "pandas", specifier = ">=2.0.0" },
     { name = "playwright", specifier = ">=1.56.0" },
     { name = "streamlit", specifier = ">=1.30.0" },
+    { name = "twstock", specifier = ">=1.4.0" },
 ]
 
 [[package]]
@@ -3774,6 +3776,18 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/36/f3/bd9b67575bddcc7e4cca927461bd58006455208a2331262f7c9de0db8bb3/trimesh-4.10.0.tar.gz", hash = "sha256:502710a0b1f0317816507828a41e0cb1c595b895e344567fa42cd47388c2b72b", size = 831462, upload-time = "2025-11-24T19:57:51.693Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/ec/81/951a108396aa850a096be95cd9ccd38ef9f33ae35b40b512be975e2c994d/trimesh-4.10.0-py3-none-any.whl", hash = "sha256:bdafda66d5c8a9564d7d82f5673c06f8b4fc51c86de959fafee0e169fcfea12a", size = 736626, upload-time = "2025-11-24T19:57:49.158Z" },
+]
+
+[[package]]
+name = "twstock"
+version = "1.4.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "requests" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/89/43/8223bbd6d58c9b5262ba03623265a5261a716dc5f167c4eee83ce9bef404/twstock-1.4.0.tar.gz", hash = "sha256:df90924ab7cf670065e76695b051ad84cf1ff0da492f44d2e27bb2af18d329ca", size = 626414, upload-time = "2024-05-16T03:58:00.978Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/10/17/32aa8bad388aeb5c058d6bdaeeb204d394910340c30f8d7701a614f49647/twstock-1.4.0-py3-none-any.whl", hash = "sha256:2f4e491e7a4eb66c2c923fc426f0ca5016023776f068e1166405e845940558ee", size = 626108, upload-time = "2024-05-16T03:57:52.723Z" },
 ]
 
 [[package]]

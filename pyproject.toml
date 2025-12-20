@@ -11,4 +11,5 @@ dependencies = [
     "playwright>=1.56.0",
     "streamlit>=1.30.0",
     "pandas>=2.0.0",
+    "twstock>=1.4.0",
 ]
